@@ -1,5 +1,6 @@
 package ast;
 
+import scanner.ScanErrorException;
 import environment.Environment;
 
 /**

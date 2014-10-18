@@ -187,7 +187,7 @@ public class Scanner
      */
     public static boolean isWhitespace(char testchar) 
     {
-    	return testchar==' ' || testchar == '\n' || testchar == '\r'; 
+    	return testchar==' ' || testchar == '\n' || testchar == '\r' || testchar=='\t'; 
     }
     
     /**

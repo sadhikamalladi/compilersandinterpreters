@@ -17,6 +17,7 @@ import ast.If;
 import ast.Number;
 import ast.Statement;
 import ast.Variable;
+import ast.While;
 import ast.Writeln;
 
 
@@ -140,6 +141,18 @@ public class Parser
 			eat("THEN");
 			If ifstatement = new If(cond,parseStatement());
 			return ifstatement;
+		}
+		else if (currentToken.equals("WHILE"))
+		{
+			eat("WHILE");
+			Expression lhs = parseExpression();
+			String relop = currentToken;
+			eat(relop);
+			Expression rhs = parseExpression();
+			Condition cond = new Condition(lhs,relop,rhs);
+			eat("DO");
+			While whileloop = new While(cond,parseStatement());
+			return whileloop;
 		}
 		else
 		{
