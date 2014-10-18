@@ -1,15 +1,22 @@
 package parser;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 
-import scanner.*;
+import environment.Environment;
+
+import scanner.Scanner;
+import scanner.ScanErrorException;
+
 import ast.Assignment;
+import ast.BinOp;
 import ast.Block;
+import ast.Condition;
 import ast.Expression;
+import ast.If;
 import ast.Number;
 import ast.Statement;
+import ast.Variable;
 import ast.Writeln;
 
 
@@ -32,7 +39,6 @@ public class Parser
 {
 	private Scanner scannie;
 	private String currentToken;
-	private HashMap map;
 
 	/**
 	 * initializes scannie instance variable and reads in first token. initializes
@@ -49,7 +55,6 @@ public class Parser
 		} 
 		catch (ScanErrorException e) 
 		{}
-		map=new HashMap<String,Integer>();
 	}
 
 	/**
@@ -86,7 +91,17 @@ public class Parser
 		eat(currentToken);
 		return new Number(returnValue);
 	}
-
+	
+	public void parseScript() throws IllegalArgumentException, ScanErrorException
+	{
+		Environment env = new Environment();
+		while(!currentToken.equals("."))
+		{
+			Statement stmt = parseStatement();
+			stmt.exec(env);
+		}
+	}
+	
 	/**
 	 * parses a statement, defined by the grammar (tokens separated by spaces):
 	 * 	stmt -> WRITELN ( expr ) ; | BEGIN whilebegin | id := expr ;
@@ -100,41 +115,61 @@ public class Parser
 	 */
 	public Statement parseStatement() throws IllegalArgumentException, ScanErrorException
 	{
-		while (!currentToken.equals("."))
+		if (currentToken.equals("WRITELN"))
 		{
-			if (currentToken.equals("WRITELN"))
-			{
-				eat("WRITELN");
-				eat("(");
-				Expression exp = parseExpression();
-				eat(")");
-				eat(";");
-				return new Writeln(exp);
-			}
-			else if (currentToken.equals("BEGIN"))
-			{
-				eat("BEGIN");
-				List<Statement> stmts = new ArrayList<Statement>();
-				while (! currentToken.equals("END"))
-				{
-					Statement stmt = parseStatement();
-					stmts.add(stmt);
-				}
-				eat("END");
-				eat(";");
-				return new Block(stmts);
-			}
-			else
-			{
-				String key = currentToken;
-				eat(key);
-				eat(":=");
-				Expression value = parseExpression();
-				return new Assignment(key,value);
-			}
+			eat("WRITELN");
+			eat("(");
+			Expression expr = parseExpression();
+			Statement returnVal = new Writeln(expr);
+			eat(")");
+			eat(";");
+			return returnVal;
 		}
-		eat(".");
-		return null;
+		else if (currentToken.equals("BEGIN"))
+		{
+			return parseStatements();
+		}
+		else if (currentToken.equals("IF"))
+		{
+			eat("IF");
+			Expression lhs = parseExpression();
+			String relop = currentToken;
+			eat(relop);
+			Expression rhs = parseExpression();
+			Condition cond = new Condition(lhs,relop,rhs);
+			eat("THEN");
+			If ifstatement = new If(cond,parseStatement());
+			return ifstatement;
+		}
+		else
+		{
+			String key = currentToken;
+			eat(key);
+			eat(":=");
+			Expression exp = parseExpression();
+			eat(";");
+			return new Assignment(key, exp);
+		}
+	}
+	
+	/**
+	 * parses a block of statements defined by the grammar
+	 * 
+	 * @throws ScanErrorException 
+	 * @throws IllegalArgumentException 
+	 */
+	private Statement parseStatements() throws IllegalArgumentException, ScanErrorException
+	{
+		//List<Statement> block = new ArrayList<Statement>();
+		Block block = new Block();
+		eat("BEGIN");
+		while (! currentToken.equals("END"))
+		{
+			block.add(parseStatement());
+		}
+		eat("END");
+		eat(";");
+		return block;
 	}
 
 	/**
@@ -150,22 +185,34 @@ public class Parser
 	 */
 	public Expression parseFactor() throws IllegalArgumentException, ScanErrorException
 	{
-		Expression returnValue=new Number(0);
 		if (Scanner.isDigit(currentToken.charAt(0))) 
-			returnValue=parseNumber(); // base case
-		if (currentToken.equals("(")) // factor -> ( term )
+		{
+			return parseNumber(); // base case
+		}
+		else if (Scanner.isLetter(currentToken.charAt(0)))
+		{
+			String var = currentToken;
+			eat(var);
+			return new Variable(var);
+		}
+		else if (currentToken.equals("(")) // factor -> ( term )    
 		{
 			eat(currentToken);
-			returnValue=parseExpression();
+			Expression expr = parseExpression();
 			eat(")");
+			return expr;
 		}
-		if (currentToken.equals("-")) // factor -> - factor
+		else if (currentToken.equals("-")) // factor -> - factor
 		{
 			eat(currentToken);
-			Number intermediateValue = (Number)(parseFactor());
-			returnValue= new Number(0-intermediateValue.getValue());
+			Number num = (Number)(parseFactor());
+			return new Number(0-num.getValue());
 		}
-		return returnValue;
+		else
+		{
+			System.out.println("error");
+			return null;
+		}
 	}
 
 	/**
@@ -190,14 +237,14 @@ public class Parser
 			if (currentToken.equals("*"))
 			{
 				eat("*");
-				Number rhs = (Number)parseFactor();		
-				lhs = new Number(((Number)lhs).getValue()*rhs.getValue());
+				Expression rhs = parseFactor();		
+				lhs = new BinOp(lhs,"*",rhs);
 			}
 			else
 			{
 				eat("/");
-				Number rhs = (Number)parseFactor();
-				lhs = new Number(((Number)lhs).getValue()/rhs.getValue());
+				Expression rhs = parseFactor();
+				lhs = new BinOp(lhs,"/",rhs);
 			}
 		}
 
@@ -216,28 +263,19 @@ public class Parser
 	{
 		Expression lhs = parseTerm();
 
-		if (currentToken.equals("mod"))
+		while (currentToken.equals("-") || currentToken.equals("+"))
 		{
-			eat("mod");
-			Number rhs = parseNumber();
-			lhs = new Number(((Number)lhs).getValue() % rhs.getValue());
-		}
-		else
-		{
-			while (currentToken.equals("-") || currentToken.equals("+"))
+			if (currentToken.equals("+"))
 			{
-				if (currentToken.equals("+"))
-				{
-					eat("+");
-					Number rhs = (Number)parseExpression();
-					lhs= new Number(((Number)lhs).getValue() + rhs.getValue());
-				}
-				else;
-				{
-					eat("-");
-					Number rhs = (Number)parseExpression();
-					new Number(((Number)lhs).getValue() - rhs.getValue());
-				}
+				eat("+");
+				Expression rhs = parseExpression();
+				lhs= new BinOp(lhs,"+",rhs);
+			}
+			else
+			{
+				eat("-");
+				Expression rhs = parseExpression();
+				lhs= new BinOp(lhs,"-",rhs);
 			}
 		}
 		return lhs;

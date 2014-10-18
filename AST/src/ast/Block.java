@@ -1,5 +1,6 @@
 package ast;
 
+import java.util.ArrayList;
 import java.util.List;
 import environment.Environment;
 
@@ -22,9 +23,23 @@ public class Block extends Statement
 	 * @param statements the list of statements to initialize
 	 * 					 stmts to
 	 */
-	public Block(List<Statement> statements)
+	public Block()
 	{
-		stmts=statements;
+		stmts=new ArrayList<Statement>();
+	}
+	
+	/**
+	 * add a statement to the list of statements inside of this block
+	 * @param stmt
+	 */
+	public void add(Statement stmt)
+	{
+		stmts.add(stmt);
+	}
+	
+	public int getSize()
+	{
+		return stmts.size();
 	}
 	
 	/**
@@ -32,9 +47,8 @@ public class Block extends Statement
 	 */
 	public void exec(Environment env)
 	{
-		for(int i=1; i<stmts.size(); i++)
+		for(Statement stmt : stmts)
 		{
-			Statement stmt = stmts.get(i);
 			stmt.exec(env);
 		}
 	}

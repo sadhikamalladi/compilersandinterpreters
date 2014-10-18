@@ -92,52 +92,59 @@ public class Parser
 	 */
 	public void parseStatement() throws IllegalArgumentException, ScanErrorException
 	{
-		while (!currentToken.equals("."))
+		if (currentToken.equals("WRITELN"))
 		{
-			if (currentToken.equals("WRITELN"))
-			{
-				eat("WRITELN");
-				eat("(");
-				System.out.println(parseExpression());
-				eat(")");
-				eat(";");
-			}
-			else if (currentToken.equals("BEGIN"))
-			{
-				eat("BEGIN");
-				while (! currentToken.equals("END"))
-					parseStatement();
-				eat("END");
-				eat(";");
-			}
-			else if (currentToken.equals("*"))
-			{
-				eat("(");
-				boolean commentEnd=false;
-				while (!commentEnd && scannie.hasNext())
-				{
-					eat(currentToken);
-					if (currentToken.equals("*"))
-					{
-						eat("*");
-						commentEnd=currentToken.equals(")");
-					}
-				}
-				if(!commentEnd)
-					throw new ScanErrorException("Comment not completed.");
-				else
-					eat(")");
-			}
-			else
-			{
-				String key = currentToken;
-				eat(key);
-				eat(":=");
-				int value = parseExpression();
-				map.put(key, value);
-			}
+			eat("WRITELN");
+			eat("(");
+			System.out.println(parseExpression());
+			eat(")");
+			eat(";");
 		}
-		eat(".");
+		else if (currentToken.equals("BEGIN"))
+		{
+			parseStatements();
+		}
+		else if (currentToken.equals("*"))
+		{
+			eat("(");
+			boolean commentEnd=false;
+			while (!commentEnd && scannie.hasNext())
+			{
+				eat(currentToken);
+				if (currentToken.equals("*"))
+				{
+					eat("*");
+					commentEnd=currentToken.equals(")");
+				}
+			}
+			if(!commentEnd)
+				throw new ScanErrorException("Comment not completed.");
+			else
+				eat(")");
+		}
+		else
+		{
+			String key = currentToken;
+			eat(key);
+			eat(":=");
+			int value = parseExpression();
+			map.put(key, value);
+		}
+	}
+	
+	/**
+	 * parses a block of statements defined by the grammar
+	 * 
+	 * @throws ScanErrorException 
+	 * @throws IllegalArgumentException 
+	 */
+	private void parseStatements() throws IllegalArgumentException, ScanErrorException
+	{
+		eat("BEGIN");
+		while (! currentToken.equals("END"))
+			parseStatement();
+		eat("END");
+		eat(";");
 	}
 
 	/**

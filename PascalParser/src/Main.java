@@ -35,15 +35,18 @@ public class Main
 		
 		Scanner scannie = new Scanner(test0);
 		Parser parsey = new Parser(scannie);
-		parsey.parseStatement();
+		while (scannie.hasNext())
+			parsey.parseStatement();
 		
 		Scanner sascandra = new Scanner(test1);
 		Parser parsanne = new Parser(sascandra);
-		parsanne.parseStatement();
+		while (sascandra.hasNext())
+			parsanne.parseStatement();
 		
 		Scanner scabrina = new Scanner(test2);
 		Parser parmela = new Parser(scabrina);
-		parmela.parseStatement();
+		while (scabrina.hasNext())
+			parmela.parseStatement();
 		
 	}
 

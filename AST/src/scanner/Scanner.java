@@ -135,7 +135,7 @@ public class Scanner
     public String nextToken() throws ScanErrorException
     {
     	if (eof)
-    		return ".";
+    		return "";
     	while(isWhitespace(currentChar))
     		eat(currentChar);
     	if(isDigit(currentChar))
@@ -270,9 +270,18 @@ public class Scanner
     	char returnedOperand=currentChar;
     	eat(currentChar);
     	String fullOperand="";
+    	// account for <>
+    	if (returnedOperand=='<' && currentChar=='>')
+    	{
+    		fullOperand=""+returnedOperand+currentChar;
+    		eat(currentChar);
+    	}
     	// account for <=, >=, and :=
-    	if ((returnedOperand=='<' || returnedOperand=='>' || returnedOperand==':') && currentChar=='=')
-    		fullOperand=""+currentChar+returnedOperand;
+    	else if ((returnedOperand=='<' || returnedOperand=='>' || returnedOperand==':') && currentChar=='=')
+    	{
+    		fullOperand=""+returnedOperand+currentChar;
+    		eat(currentChar);
+    	}
     	else
     		fullOperand=""+returnedOperand;
     	// account for line comments
