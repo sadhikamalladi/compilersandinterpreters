@@ -13,6 +13,7 @@ import ast.BinOp;
 import ast.Block;
 import ast.Condition;
 import ast.Expression;
+import ast.For;
 import ast.If;
 import ast.Number;
 import ast.Statement;
@@ -23,11 +24,14 @@ import ast.Writeln;
 
 /**
  * parses pascal statement, defined by the below grammar:
- * 	stmt -> WRITELN ( expr ) ; | BEGIN stmts END ; | id := expr ;
+ * 	stmt -> WRITELN ( expr ) ; | BEGIN stmts END ; | id := expr ; | IF cond THEN stmt |
+ * 			WHILE cond DO stmt | FOR id := num TO num DO stmt
  * 	stmts -> stmts stmt | Empty String
  * 	expr -> expr - term | expr + term | term
- * 	term -> term * factor | term / factor | term mod num | factor
+ * 	term -> term * factor | term / factor | factor
  * 	factor -> ( expr ) | - factor | num | id
+ * 	cond -> expr relop expr
+ * 	relop -> = | <> | < | > | <= | >=
  * 
  * certain parts have been left-factored to allow for recursive descent parsing.
  * 
@@ -153,6 +157,22 @@ public class Parser
 			eat("DO");
 			While whileloop = new While(cond,parseStatement());
 			return whileloop;
+		}
+		else if (currentToken.equals("FOR"))
+		{
+			eat("FOR");
+			String id = currentToken;
+			eat(id);
+			eat(":=");
+			Number num = new Number(Integer.parseInt(currentToken));
+			eat(currentToken);
+			eat("TO");
+			Number endval = new Number(Integer.parseInt(currentToken));
+			eat(currentToken);
+			eat("DO");
+			Statement stmt = parseStatement();
+			For forloop = new For(id,num,endval,stmt);
+			return forloop;
 		}
 		else
 		{
