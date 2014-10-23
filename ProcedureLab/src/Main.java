@@ -19,7 +19,7 @@ public class Main
 
 	public static void main(String[] args) throws FileNotFoundException, IllegalArgumentException, ScanErrorException 
 	{
-		FileInputStream test0= new FileInputStream(new File("/home/sadhika/Documents/testFile.txt"));
+		FileInputStream test0= new FileInputStream(new File("/home/sadhika/compilersandinterpreters/ProcedureLab/src/testerFile.txt"));
 		Environment env = new Environment();
 		Scanner sascandra = new Scanner(test0);
 		Parser parsela = new Parser(sascandra);

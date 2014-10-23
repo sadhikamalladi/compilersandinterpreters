@@ -126,6 +126,9 @@ public class Parser
 			eat("PROCEDURE");
 			String id = currentToken;
 			eat(id);
+			eat("(");
+			eat(")");
+			eat(";");
 			ProcedureDeclaration procdec = new ProcedureDeclaration(id,parseStatement());
 			prog.addProcedure(procdec);
 		}
@@ -205,6 +208,7 @@ public class Parser
 		{
 			String key = currentToken;
 			eat(key);
+			
 			eat(":=");
 			Expression exp = parseExpression();
 			eat(";");
