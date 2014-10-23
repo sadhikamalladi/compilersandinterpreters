@@ -16,6 +16,9 @@ import ast.Expression;
 import ast.For;
 import ast.If;
 import ast.Number;
+import ast.ProcedureCall;
+import ast.ProcedureDeclaration;
+import ast.Program;
 import ast.Statement;
 import ast.Variable;
 import ast.While;
@@ -97,14 +100,38 @@ public class Parser
 		return new Number(returnValue);
 	}
 	
+	/**
+	 * parse and execute the whole script
+	 * @throws ScanErrorException 
+	 * @throws IllegalArgumentException 
+	 */
 	public void parseScript() throws IllegalArgumentException, ScanErrorException
 	{
 		Environment env = new Environment();
-		while(!currentToken.equals("."))
+		Program prog = parseProgram();
+		prog.exec(env);
+	}
+	
+	/**
+	 * parses the whole program
+	 * @throws IllegalArgumentException
+	 * @throws ScanErrorException
+	 */
+	public Program parseProgram() throws IllegalArgumentException, ScanErrorException
+	{
+		Environment env = new Environment();
+		Program prog = new Program();
+		while(currentToken.equals("PROCEDURE"))
 		{
-			Statement stmt = parseStatement();
-			stmt.exec(env);
+			eat("PROCEDURE");
+			String id = currentToken;
+			eat(id);
+			ProcedureDeclaration procdec = new ProcedureDeclaration(id,parseStatement());
+			prog.addProcedure(procdec);
 		}
+		Statement stmt = parseStatement();
+		prog.addStatement(stmt);
+		return prog;		
 	}
 	
 	/**
@@ -226,6 +253,13 @@ public class Parser
 		{
 			String var = currentToken;
 			eat(var);
+			if (currentToken.equals("("))
+			{
+				eat("(");
+				ProcedureCall call = new ProcedureCall(var);
+				eat(")");
+				return call;
+			}
 			return new Variable(var);
 		}
 		else if (currentToken.equals("(")) // factor -> ( term )    
