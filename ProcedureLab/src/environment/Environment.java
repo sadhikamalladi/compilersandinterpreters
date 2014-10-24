@@ -19,15 +19,25 @@ public class Environment
 {
 	private Hashtable<String,Integer> table;
 	private Hashtable<String,ProcedureDeclaration> procedures;
+	private Environment parent;
 	
 	/**
-	 * initializes table instance variable to new hash tabl
+	 * initializes instance variables
 	 */
 	public Environment()
 	{
 		table = new Hashtable<String,Integer>();
 		procedures = new Hashtable<String,ProcedureDeclaration>();
+		parent = null;
 	}
+	
+	public Environment(Environment parent)
+	{
+		this.parent = parent;
+		table = new Hashtable<String,Integer>();
+		procedures = new Hashtable<String,ProcedureDeclaration>();
+	}
+	
 	
 	/**
 	 * sets (in the hash table) the variable to the value given.
@@ -47,7 +57,10 @@ public class Environment
 	 */
 	public void setProcedure(String variable, ProcedureDeclaration decl)
 	{
-		procedures.put(variable,decl);
+		if (parent != null)
+			parent.setProcedure(variable, decl);
+		else
+			setProcedure(variable, decl);
 	}
 	
 	/**
@@ -58,7 +71,10 @@ public class Environment
 	 */
 	public int getVariable(String variable)
 	{
-		return table.get(variable);
+		if (table.contains(variable))
+			return table.get(variable);
+		else
+			return parent.getVariable(variable);
 	}
 	
 	/**
@@ -69,6 +85,8 @@ public class Environment
 	 */
 	public ProcedureDeclaration getProcedure(String variable)
 	{
+		if (parent != null)
+			return parent.getProcedure(variable);
 		return procedures.get(variable);
 	}
 
