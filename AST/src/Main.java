@@ -13,6 +13,7 @@ import parser.Parser;
 
 import environment.Environment;
 
+// test creation of abstract syntax tree
 
 public class Main 
 {

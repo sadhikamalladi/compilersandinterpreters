@@ -127,9 +127,18 @@ public class Parser
 			String id = currentToken;
 			eat(id);
 			eat("(");
+			List<String> argnames = new ArrayList<String>();
+			while (!currentToken.equals(")"))
+			{
+				String arg = currentToken;
+				eat(arg);
+				argnames.add(arg);
+				if (currentToken.equals(","))
+					eat(",");
+			}
 			eat(")");
 			eat(";");
-			ProcedureDeclaration procdec = new ProcedureDeclaration(id,parseStatement());
+			ProcedureDeclaration procdec = new ProcedureDeclaration(id,argnames,parseStatement());
 			prog.addProcedure(procdec);
 		}
 		Statement stmt = parseStatement();
@@ -260,7 +269,15 @@ public class Parser
 			if (currentToken.equals("("))
 			{
 				eat("(");
-				ProcedureCall call = new ProcedureCall(var);
+				List<Expression> args = new ArrayList<Expression>();
+				while (!currentToken.equals(")"))
+				{
+					Expression argument = parseExpression();
+					args.add(argument);
+					if (!currentToken.equals(")"))
+						eat(",");
+				}
+				ProcedureCall call = new ProcedureCall(var,args);
 				eat(")");
 				return call;
 			}

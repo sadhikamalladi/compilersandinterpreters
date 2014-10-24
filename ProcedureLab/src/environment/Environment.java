@@ -1,6 +1,7 @@
 package environment;
 
 import java.util.Hashtable;
+import java.util.List;
 
 import ast.Statement;
 
@@ -17,6 +18,7 @@ public class Environment
 {
 	private Hashtable<String,Integer> table;
 	private Hashtable<String,Statement> procedures;
+	private Hashtable<Statement,List<String>> argnames;
 	
 	/**
 	 * initializes table instance variable to new hash tabl
@@ -25,6 +27,7 @@ public class Environment
 	{
 		table = new Hashtable<String,Integer>();
 		procedures = new Hashtable<String,Statement>();
+		argnames = new Hashtable<Statement,List<String>>();
 	}
 	
 	/**

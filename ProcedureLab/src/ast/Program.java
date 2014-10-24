@@ -13,7 +13,7 @@ import environment.Environment;
  * @author sadhika
  *
  */
-public class Program 
+public class Program extends Statement
 {
 	private ArrayList<ProcedureDeclaration> procedures;
 	private Statement stmt;

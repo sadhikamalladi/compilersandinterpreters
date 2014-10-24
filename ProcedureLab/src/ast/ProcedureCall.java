@@ -1,5 +1,7 @@
 package ast;
 
+import java.util.List;
+
 import environment.Environment;
 
 /**
@@ -13,13 +15,15 @@ import environment.Environment;
 public class ProcedureCall extends Expression
 {
 	private String id;	
+	private List<Expression> args;
 	/**
 	 * basic constructor that initializes instance variables
 	 * @param id
 	 * @param stmt
 	 */
-	public ProcedureCall(String id)
+	public ProcedureCall(String id,List<Expression> arguments)
 	{
+		args = arguments;
 		this.id = id;
 	}
 	
@@ -30,6 +34,9 @@ public class ProcedureCall extends Expression
 	public int eval(Environment env)
 	{
 		Statement stmt = env.getProcedure(id);
+		for (Expression arg : args)
+		{
+			int argVal = arg.eval(env);
 		stmt.exec(env);
 		return 0;
 	}
