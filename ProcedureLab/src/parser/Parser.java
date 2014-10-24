@@ -127,11 +127,11 @@ public class Parser
 			String id = currentToken;
 			eat(id);
 			eat("(");
-			List<String> argnames = new ArrayList<String>();
+			List<Variable> argnames = new ArrayList<Variable>();
 			while (!currentToken.equals(")"))
 			{
-				String arg = currentToken;
-				eat(arg);
+				Variable arg = new Variable(currentToken);
+				eat(arg.getName());
 				argnames.add(arg);
 				if (currentToken.equals(","))
 					eat(",");

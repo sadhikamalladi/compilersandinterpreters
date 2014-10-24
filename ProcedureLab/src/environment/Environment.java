@@ -3,6 +3,7 @@ package environment;
 import java.util.Hashtable;
 import java.util.List;
 
+import ast.ProcedureDeclaration;
 import ast.Statement;
 
 import scanner.ScanErrorException;
@@ -17,8 +18,7 @@ import scanner.ScanErrorException;
 public class Environment 
 {
 	private Hashtable<String,Integer> table;
-	private Hashtable<String,Statement> procedures;
-	private Hashtable<Statement,List<String>> argnames;
+	private Hashtable<String,ProcedureDeclaration> procedures;
 	
 	/**
 	 * initializes table instance variable to new hash tabl
@@ -26,8 +26,7 @@ public class Environment
 	public Environment()
 	{
 		table = new Hashtable<String,Integer>();
-		procedures = new Hashtable<String,Statement>();
-		argnames = new Hashtable<Statement,List<String>>();
+		procedures = new Hashtable<String,ProcedureDeclaration>();
 	}
 	
 	/**
@@ -46,9 +45,9 @@ public class Environment
 	 * @param variable
 	 * @param value
 	 */
-	public void setProcedure(String variable, Statement stmt)
+	public void setProcedure(String variable, ProcedureDeclaration decl)
 	{
-		procedures.put(variable,stmt);
+		procedures.put(variable,decl);
 	}
 	
 	/**
@@ -68,7 +67,7 @@ public class Environment
 	 * @return
 	 * @throws ScanErrorException 
 	 */
-	public Statement getProcedure(String variable)
+	public ProcedureDeclaration getProcedure(String variable)
 	{
 		return procedures.get(variable);
 	}

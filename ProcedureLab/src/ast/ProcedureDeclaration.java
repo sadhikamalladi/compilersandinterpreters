@@ -12,22 +12,27 @@ public class ProcedureDeclaration extends Statement
 {
 	private String id;
 	private Statement stmt;
-	private List<String> argNames;
+	private List<Variable> argNames;
 	
 	/**
 	 * basic constructor takes in parameters for instance vars
 	 * id and stmt.
 	 */
-	public ProcedureDeclaration(String id, List<String> argNames, Statement stmt)
+	public ProcedureDeclaration(String id, List<Variable> argNames, Statement stmt)
 	{
 		this.argNames = argNames;		
 		this.id = id;
 		this.stmt = stmt;
 	}
 	
-	public List<String> getArgNames()
+	public List<Variable> getArgNames()
 	{
 		return argNames;
+	}
+	
+	public Statement getStatement()
+	{
+		return stmt;
 	}
 	
 	/**
@@ -36,6 +41,6 @@ public class ProcedureDeclaration extends Statement
 	 */
 	public void exec(Environment env)
 	{
-		env.setProcedure(id,stmt);
+		env.setProcedure(id,this);
 	}
 }

@@ -33,10 +33,14 @@ public class ProcedureCall extends Expression
 	 */
 	public int eval(Environment env)
 	{
-		Statement stmt = env.getProcedure(id);
+		ProcedureDeclaration declaration = env.getProcedure(id); 
+		List<Variable> argVars = declaration.getArgNames();
 		for (Expression arg : args)
 		{
-			int argVal = arg.eval(env);
+			Assignment assign = new Assignment(argVars.get(0).getName(),arg);
+			assign.exec(env);
+		}
+		Statement stmt = declaration.getStatement();
 		stmt.exec(env);
 		return 0;
 	}
