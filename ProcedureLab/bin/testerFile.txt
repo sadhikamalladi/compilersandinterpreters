@@ -1,8 +1,7 @@
-PROCEDURE add3();
-count := count + 3;
+PROCEDURE printSquare(n);
+WRITELN(n * n);
 BEGIN
-count := 2;
-ignore := add3();
-WRITELN(count);
+x := 1;
+ignore := printSquare(x + 2);
 END;
 .

@@ -1,0 +1,14 @@
+PROCEDURE add3(n);
+BEGIN
+count := count + 3;
+n:=n+2;
+END;
+
+BEGIN
+count := 2;
+p:=1;
+ignore := add3(p);
+WRITELN(count);
+WRITELN(p);
+END;
+.
