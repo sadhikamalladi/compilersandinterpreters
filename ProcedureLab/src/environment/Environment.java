@@ -46,7 +46,10 @@ public class Environment
 	 */
 	public void setVariable(String variable, int value)
 	{
-		table.put(variable,value);
+		if (parent!=null && !table.contains(variable))
+			parent.setVariable(variable, value);
+		else
+			declareVariable(variable,value);
 	}
 	
 	/**
@@ -58,9 +61,12 @@ public class Environment
 	public void setProcedure(String variable, ProcedureDeclaration decl)
 	{
 		if (parent != null)
+		{
+			System.out.println("Here");
 			parent.setProcedure(variable, decl);
+		}
 		else
-			setProcedure(variable, decl);
+			procedures.put(variable,decl);
 	}
 	
 	/**
@@ -71,10 +77,17 @@ public class Environment
 	 */
 	public int getVariable(String variable)
 	{
+		System.out.println(table);
+		System.out.println(variable);
 		if (table.contains(variable))
 			return table.get(variable);
 		else
 			return parent.getVariable(variable);
+	}
+	
+	public void declareVariable(String variable, int value)
+	{
+		table.put(variable,value);
 	}
 	
 	/**

@@ -59,7 +59,9 @@ public class Parser
 			currentToken=scannie.nextToken();
 		} 
 		catch (ScanErrorException e) 
-		{}
+		{
+			e.printStackTrace();
+		}
 	}
 
 	/**

@@ -107,7 +107,7 @@ public class Parser
 	 */
 	public void parseScript() throws IllegalArgumentException, ScanErrorException
 	{
-		Environment env = new Environment();
+		Environment env = new Environment(null);
 		Program prog = parseProgram();
 		prog.exec(env);
 	}

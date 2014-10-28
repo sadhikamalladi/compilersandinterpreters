@@ -1,14 +1,10 @@
-PROCEDURE add3(n);
+PROCEDURE foo(d);
+ignore := bar(d + f);
+PROCEDURE bar(f);
+WRITELN(f);
 BEGIN
-count := count + 3;
-n:=n+2;
-END;
-
-BEGIN
-count := 2;
-p:=1;
-ignore := add3(p);
-WRITELN(count);
-WRITELN(p);
+f := 2;
+ignore := foo(3);
+WRITELN(f);
 END;
 .
