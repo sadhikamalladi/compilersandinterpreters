@@ -12,20 +12,20 @@ public class ProcedureDeclaration extends Statement
 {
 	private String id;
 	private Statement stmt;
-	private List<Variable> argNames;
+	private List<String> argNames;
 	
-	/**
+	/**Variable
 	 * basic constructor takes in parameters for instance vars
 	 * id and stmt.
 	 */
-	public ProcedureDeclaration(String id, List<Variable> argNames, Statement stmt)
+	public ProcedureDeclaration(String id, List<String> argNames, Statement stmt)
 	{
 		this.argNames = argNames;		
 		this.id = id;
 		this.stmt = stmt;
 	}
 	
-	public List<Variable> getArgNames()
+	public List<String> getArgNames()
 	{
 		return argNames;
 	}

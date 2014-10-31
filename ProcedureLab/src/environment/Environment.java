@@ -62,11 +62,12 @@ public class Environment
 	{
 		if (parent != null)
 		{
-			System.out.println("Here");
 			parent.setProcedure(variable, decl);
 		}
 		else
+		{
 			procedures.put(variable,decl);
+		}
 	}
 	
 	/**
@@ -77,9 +78,7 @@ public class Environment
 	 */
 	public int getVariable(String variable)
 	{
-		System.out.println(table);
-		System.out.println(variable);
-		if (table.contains(variable))
+		if (table.keySet().contains(variable))
 			return table.get(variable);
 		else
 			return parent.getVariable(variable);

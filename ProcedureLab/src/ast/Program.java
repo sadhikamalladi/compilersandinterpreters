@@ -36,7 +36,10 @@ public class Program extends Statement
 	public void exec(Environment env)
 	{
 		for(ProcedureDeclaration proc: procedures)
+		{
+			System.out.println("Executing procedure");
 			proc.exec(env);
+		}
 		stmt.exec(env);
 	}
 }
