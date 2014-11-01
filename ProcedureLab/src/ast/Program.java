@@ -33,11 +33,15 @@ public class Program extends Statement
 		procedures.add(procedure);
 	}
 	
+	/**
+	 * Executing this Program object involves executing all
+	 * of the procedures and then executing the statement, all
+	 * within the global environment.
+	 */
 	public void exec(Environment env)
 	{
 		for(ProcedureDeclaration proc: procedures)
 		{
-			System.out.println("Executing procedure");
 			proc.exec(env);
 		}
 		stmt.exec(env);

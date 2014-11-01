@@ -27,14 +27,16 @@ import ast.Writeln;
 
 /**
  * parses pascal statement, defined by the below grammar:
- * 	stmt -> WRITELN ( expr ) ; | BEGIN stmts END ; | id := expr ; | IF cond THEN stmt |
- * 			WHILE cond DO stmt | FOR id := num TO num DO stmt
- * 	stmts -> stmts stmt | Empty String
- * 	expr -> expr - term | expr + term | term
- * 	term -> term * factor | term / factor | factor
- * 	factor -> ( expr ) | - factor | num | id
- * 	cond -> expr relop expr
- * 	relop -> = | <> | < | > | <= | >=
+ * 
+ * program → PROCEDURE id ( ) ; stmt program | stmt .
+ * stmt → WRITELN ( expr ) ; | BEGIN stmts END ; | id := expr ;
+ * | IF cond THEN stmt | WHILE cond DO stmt
+ * stmts → stmts stmt | ε
+ * expr → expr + term | expr - term | term
+ * term → term * factor | term / factor | factor
+ * factor → ( expr ) | - factor | num | id ( ) | id
+ * cond → expr relop expr
+ * relop → = | <> | < | > | <= | >=
  * 
  * certain parts have been left-factored to allow for recursive descent parsing.
  * 

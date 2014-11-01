@@ -9,8 +9,11 @@ import ast.Statement;
 import scanner.ScanErrorException;
 
 /**
- * an environment object describes a hashtable mapping strings (variables)
- * to integers (assigned values).
+ * An Environment object can have a parent environment; only the 
+ * global Environment has a null parent. In addition, an Environment
+ * stores mappings of variable names (Strings) to variable values
+ * (Integers). The map is in the form of a Hashtable. There is also
+ * a mapping of procedure names (Strings) to ProcedureDeclaration objects.
  * 
  * @author sadhika
  * @date 100414
@@ -22,7 +25,7 @@ public class Environment
 	private Environment parent;
 	
 	/**
-	 * initializes instance variables
+	 * This basic constructor initializes instance variables.
 	 */
 	public Environment()
 	{
@@ -31,6 +34,11 @@ public class Environment
 		parent = null;
 	}
 	
+	/**
+	 * If a parent is passed to the Environment, then it sets
+	 * the instance variable accordingly.
+	 * @param parent
+	 */
 	public Environment(Environment parent)
 	{
 		this.parent = parent;
@@ -40,9 +48,10 @@ public class Environment
 	
 	
 	/**
-	 * sets (in the hash table) the variable to the value given.
-	 * @param variable
-	 * @param value
+	 * If there is a parent and the variable passed
+	 * is not contained in this Environment, then the variable
+	 * value is set in the parent environment. Otherwise,
+	 * the variable is declared in this Environment.
 	 */
 	public void setVariable(String variable, int value)
 	{
@@ -53,10 +62,12 @@ public class Environment
 	}
 	
 	/**
-	 * sets (in the hash table procedures) the procedure id 
-	 * to the statement given.
-	 * @param variable
-	 * @param value
+	 * The method follows the trial up to the global Environment
+	 * (identified by a null parent Environment) and adds the procedure
+	 * to the procedures instance variable Hashtable.
+	 * 
+	 * @param variable id of the procedure
+	 * @param value	   declaration associated with the procedure
 	 */
 	public void setProcedure(String variable, ProcedureDeclaration decl)
 	{
@@ -71,10 +82,12 @@ public class Environment
 	}
 	
 	/**
-	 * returns the value mapped to the given variable
+	 * If the variable is in this Environment, then its value 
+	 * is returned. Otherwise, this method is called on the
+	 * parent environment.
+	 * 
 	 * @param variable
 	 * @return
-	 * @throws ScanErrorException 
 	 */
 	public int getVariable(String variable)
 	{
@@ -84,13 +97,21 @@ public class Environment
 			return parent.getVariable(variable);
 	}
 	
+	/**
+	 * This method adds a variable to the Hashtable instance
+	 * variable table in this Environment.
+	 * @param variable
+	 * @param value
+	 */
 	public void declareVariable(String variable, int value)
 	{
 		table.put(variable,value);
 	}
 	
 	/**
-	 * returns the value mapped to the given variable
+	 * This method returns the procedure listed in the global
+	 * environment.
+	 * 
 	 * @param variable
 	 * @return
 	 * @throws ScanErrorException 
