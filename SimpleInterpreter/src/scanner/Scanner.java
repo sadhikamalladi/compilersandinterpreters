@@ -257,7 +257,7 @@ public class Scanner
     */
     private String scanOperand() throws ScanErrorException
     {
-    	char[] validOperands = {'=','+','-','*','/','%','(',')',';',':','.','>','<'};
+    	char[] validOperands = {'=','+','-','*','/','%','(',')',';',':','.','>','<',','};
     	int findIndex=0;
     	boolean found = currentChar==validOperands[findIndex];
     	while(!found && findIndex < validOperands.length-1)

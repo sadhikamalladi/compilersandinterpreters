@@ -16,6 +16,9 @@ import ast.Expression;
 import ast.For;
 import ast.If;
 import ast.Number;
+import ast.ProcedureCall;
+import ast.ProcedureDeclaration;
+import ast.Program;
 import ast.Statement;
 import ast.Variable;
 import ast.While;
@@ -24,14 +27,16 @@ import ast.Writeln;
 
 /**
  * parses pascal statement, defined by the below grammar:
- * 	stmt -> WRITELN ( expr ) ; | BEGIN stmts END ; | id := expr ; | IF cond THEN stmt |
- * 			WHILE cond DO stmt | FOR id := num TO num DO stmt
- * 	stmts -> stmts stmt | Empty String
- * 	expr -> expr - term | expr + term | term
- * 	term -> term * factor | term / factor | factor
- * 	factor -> ( expr ) | - factor | num | id
- * 	cond -> expr relop expr
- * 	relop -> = | <> | < | > | <= | >=
+ * 
+ * program → PROCEDURE id ( ) ; stmt program | stmt .
+ * stmt → WRITELN ( expr ) ; | BEGIN stmts END ; | id := expr ;
+ * | IF cond THEN stmt | WHILE cond DO stmt
+ * stmts → stmts stmt | ε
+ * expr → expr + term | expr - term | term
+ * term → term * factor | term / factor | factor
+ * factor → ( expr ) | - factor | num | id ( ) | id
+ * cond → expr relop expr
+ * relop → = | <> | < | > | <= | >=
  * 
  * certain parts have been left-factored to allow for recursive descent parsing.
  * 
@@ -59,9 +64,7 @@ public class Parser
 			currentToken=scannie.nextToken();
 		} 
 		catch (ScanErrorException e) 
-		{
-			e.printStackTrace();
-		}
+		{}
 	}
 
 	/**
@@ -99,14 +102,50 @@ public class Parser
 		return new Number(returnValue);
 	}
 	
+	/**
+	 * parse and execute the whole script
+	 * @throws ScanErrorException 
+	 * @throws IllegalArgumentException 
+	 */
 	public void parseScript() throws IllegalArgumentException, ScanErrorException
 	{
+		Environment env = new Environment(null);
+		Program prog = parseProgram();
+		prog.exec(env);
+	}
+	
+	/**
+	 * parses the whole program
+	 * @throws IllegalArgumentException
+	 * @throws ScanErrorException
+	 */
+	public Program parseProgram() throws IllegalArgumentException, ScanErrorException
+	{
 		Environment env = new Environment();
-		while(!currentToken.equals("."))
+		Program prog = new Program();
+		while(currentToken.equals("PROCEDURE"))
 		{
-			Statement stmt = parseStatement();
-			stmt.exec(env);
+			eat("PROCEDURE");
+			String id = currentToken;
+			eat(id);
+			eat("(");
+			List<String> argnames = new ArrayList<String>();
+			while (!currentToken.equals(")"))
+			{
+				String arg = currentToken;
+				eat(arg);
+				argnames.add(arg);
+				if (currentToken.equals(","))
+					eat(",");
+			}
+			eat(")");
+			eat(";");
+			ProcedureDeclaration procdec = new ProcedureDeclaration(id,argnames,parseStatement());
+			prog.addProcedure(procdec);
 		}
+		Statement stmt = parseStatement();
+		prog.addStatement(stmt);
+		return prog;		
 	}
 	
 	/**
@@ -180,6 +219,7 @@ public class Parser
 		{
 			String key = currentToken;
 			eat(key);
+			
 			eat(":=");
 			Expression exp = parseExpression();
 			eat(";");
@@ -228,6 +268,21 @@ public class Parser
 		{
 			String var = currentToken;
 			eat(var);
+			if (currentToken.equals("("))
+			{
+				eat("(");
+				List<Expression> args = new ArrayList<Expression>();
+				while (!currentToken.equals(")"))
+				{
+					Expression argument = parseExpression();
+					args.add(argument);
+					if (!currentToken.equals(")"))
+						eat(",");
+				}
+				ProcedureCall call = new ProcedureCall(var,args);
+				eat(")");
+				return call;
+			}
 			return new Variable(var);
 		}
 		else if (currentToken.equals("(")) // factor -> ( term )    
