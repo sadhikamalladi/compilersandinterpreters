@@ -1,8 +1,27 @@
-.text 0x00400000 
-.globl main 
-main: 
-li $t0, 2 # load 2 into $t0 
-li $t1, 3 # load 3 into $t1 
-addu $t2, $t0, $t1 # store $t0 + $t1 in $t2 
-li $v0, 10 
+# Sadhika Malladi - 11/11/14
+# Computes the difference between two numbers that the user inputs at runtime.
+# Register Directory:
+# $t0 first number
+# $t1 second number
+# $t3 the difference (first number - second number)
+
+main:
+li $v0,5 # read from user input
 syscall
+move $t0,$v0 # save read input to t0 register
+li $v0,5
+syscall
+move $t1,$v0
+
+subu $t3,$t0,$t1 # $t3 = $t0 - $t1
+
+# print out $t3
+move $a0, $t3
+li $v0,1
+syscall
+
+# exit
+li $v0,10
+syscall
+
+
