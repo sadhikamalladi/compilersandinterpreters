@@ -1,8 +1,10 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 
 import ast.Expression;
+import ast.Program;
 import ast.Statement;
 import ast.Block;
 
@@ -23,12 +25,16 @@ import environment.Environment;
  */
 public class Main 
 {
-	public static void main(String[] args) throws FileNotFoundException, IllegalArgumentException, ScanErrorException 
+	public static void main(String[] args) throws FileNotFoundException, IllegalArgumentException, ScanErrorException, UnsupportedEncodingException 
 	{
-		FileInputStream test0= new FileInputStream(new File("/home/sadhika/compilersandinterpreters/ProcedureLab/src/testerFile.txt"));
+		FileInputStream test0= new FileInputStream(new File("/home/sadhika/compilersandinterpreters/CodeGeneration/src/testerFile.txt"));
 		Environment env = new Environment(null);
 		Scanner sascandra = new Scanner(test0);
 		Parser parsela = new Parser(sascandra);
-		parsela.parseScript();
+		Program prog = parsela.parseScript();
+		String filePath = "/home/sadhika/Documents/outputSPIM.txt";
+		prog.compile(filePath);
+		
+		
 	}
 }

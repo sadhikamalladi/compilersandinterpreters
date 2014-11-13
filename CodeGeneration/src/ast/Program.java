@@ -1,7 +1,11 @@
 package ast;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
+import emitter.Emitter;
 import environment.Environment;
 
 /**
@@ -45,5 +49,20 @@ public class Program extends Statement
 			proc.exec(env);
 		}
 		stmt.exec(env);
+	}
+	
+	public void compile(String filePath) throws FileNotFoundException, UnsupportedEncodingException
+	{
+		Emitter e = new Emitter(filePath);
+		e.emit(".text");
+		e.emit(".globl main");
+		e.emit("main: #QTSPIM will automatically look for main");
+		stmt.compile(e);
+		e.emit("li $v0 10");
+		e.emit("syscall # halt");
+		e.emit(".data");
+		e.emit("msg:");
+		e.emit(".asciiz \"\\n\"");
+		e.close();
 	}
 }

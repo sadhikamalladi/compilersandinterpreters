@@ -1,5 +1,6 @@
 package ast;
 
+import emitter.Emitter;
 import environment.Environment;
 
 /**
@@ -12,4 +13,9 @@ import environment.Environment;
 public abstract class Statement 
 {
 	public abstract void exec(Environment env); 
+	
+	public void compile(Emitter e)
+	{
+		throw new RuntimeException("Implement me!!!!!");
+	}
 }
