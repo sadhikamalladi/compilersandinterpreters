@@ -1,6 +1,2 @@
-INDEX VERSION 1.127+C:\Users\Sadhika\Documents\GitHub\compilersandinterpreters\.metadata\.plugins\org.eclipse.jdt.core
-3991288206.index
-1630239374.index
-1079877857.index
-2155788628.index
-743904139.index
+INDEX VERSION 1.126+/home/sadhika/compilersandinterpreters/.metadata/.plugins/org.eclipse.jdt.core
+1440554233.index
